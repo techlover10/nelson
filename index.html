@@ -764,6 +764,23 @@ Nelson itself deploys as a docker container, so can be deployed pretty much anyw
 
 <p>This table should be considered an overview, and not an exhaustive list of the configuration options Nelson exposes. The author does not expect most users to be altering the default values for the majority of fields, but know that these values exist.</p>
 
+<h3 id="install-authorize" class="linkable">Authorize with Github</h3>
+
+<p>Nelson is implemented as a Github OAuth application, and it requires a one-time setup when installing it into your Github organization. If you are not familiar with how to setup a Github application, please see the <a href="https://developer.github.com/guides/basics-of-authentication/">GitHub documentation site</a> for details. This process should work equally well on both <a href="https://github.com">github.com</a> and Github Enterprise.</p>
+
+<p>When registering Nelson with Github, the exact domain on which the Nelson process is reachable should be specified (take care select the right protocol - <code>http</code> vs <code>https</code>), and the callback URL should be: <code>https://your.nelson.domain.net/auth/exchange</code>. Be sure to take the <code>clientId</code> and <code>clientSecret</code> supplied by Github and add them to the Nelson configuration:</p>
+
+<pre><code>nelson{
+  github {
+    client-id = &quot;XXXXXXX&quot;
+    client-secret = &quot;YYYYYYYYYY&quot;
+    redirect-uri = &quot;http://nelson.yourcompany.com/auth/exchange&quot;
+  }
+}
+</code></pre>
+
+<p>From a networking standpoint, provided the Github instance can reach the Nelson server, and the domain specified in the OAuth application matches that being used by the client, then the system should work. <strong>If you are using <code>github.com</code>, then your Nelson instance must be accessible from the Github outbound NAT address</strong>. If you encounter problems during the setup, the Nelson logs should contain information about the error.</p>
+
 <h3 id="install-launching" class="linkable">Launching Container</h3>
 
 <p>Typically Nelson is operated and installed as a <code>systemd</code> unit, but users are free to configure or operate the system however they please (<code>initV</code>, <code>upstart</code> etc). The docker command you use to start the system should look something like the following:</p>
@@ -792,23 +809,6 @@ Nelson itself deploys as a docker container, so can be deployed pretty much anyw
 <div class="alert alert-warning" role="alert">
 Nelson's database is a simple <a href="http://www.h2database.com/">H2</a> file-based datastore. Nelson is intended to be running as a singleton and currently does not support clustering. Support for high-availability deployment modes are planned for a future release, but typically this is not needed as outages of Nelson have no critical affect on the datacenter runtime.
 </div>
-
-<h3 id="install-authorize" class="linkable">Authorize with Github</h3>
-
-<p>Nelson is implemented as a Github OAuth application, and it requires a one-time setup when installing it into your Github organization. If you are not familiar with how to setup a Github application, please see the <a href="https://developer.github.com/guides/basics-of-authentication/">GitHub documentation site</a> for details. This process should work equally well on both <a href="https://github.com">github.com</a> and Github Enterprise.</p>
-
-<p>When registering Nelson with Github, the exact domain on which the Nelson process is reachable should be specified (take care select the right protocol - <code>http</code> vs <code>https</code>), and the callback URL should be: <code>https://your.nelson.domain.net/auth/exchange</code>. Be sure to take the <code>clientId</code> and <code>clientSecret</code> supplied by Github and add them to the Nelson configuration:</p>
-
-<pre><code>nelson{
-  github {
-    client-id = &quot;XXXXXXX&quot;
-    client-secret = &quot;YYYYYYYYYY&quot;
-    redirect-uri = &quot;http://nelson.yourcompany.com/auth/exchange&quot;
-  }
-}
-</code></pre>
-
-<p>From a networking standpoint, provided the Github instance can reach the Nelson server, and the domain specified in the OAuth application matches that being used by the client, then the system should work. <strong>If you are using <code>github.com</code>, then your Nelson instance must be accessible from the Github outbound NAT address</strong>. If you encounter problems during the setup, the Nelson logs should contain information about the error.</p>
 
 <h3 id="install-telemetry" class="linkable">Telemetry</h3>
 
